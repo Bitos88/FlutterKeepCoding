@@ -62,6 +62,7 @@ class _TaskWidgetState extends MOWState<Task, TaskWidget> {
                     if (newValue != null) {
                       if (newValue == true) {
                         model.state = TaskState.done;
+                        _alertDelete();
                       } else {
                         model.state = TaskState.toDo;
                       }
@@ -74,6 +75,38 @@ class _TaskWidgetState extends MOWState<Task, TaskWidget> {
         ),
       ),
     );
+  }
+
+  void _alertDelete() async {
+    final shouldDelete = await showDialog<bool>(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('DELETE TASK'),
+          content: SingleChildScrollView(
+            child: Text('Are you sure to delete this Task?'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: Text('No'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child: Text('YES'),
+            )
+          ],
+        );
+      },
+    );
+    if (shouldDelete == true) {
+      TaskRepository.shared.remove(model);
+    }
   }
 
   Widget _descriptionWidget(String text) {
